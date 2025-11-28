@@ -7,21 +7,32 @@ using UnityEngine;
 public class Perro : MonoBehaviour
 {
     LineRenderer linea;
-    public Transform[] posiciones;
+    public Transform posicionInicial;
+    public float fuerza = 20;
     private void Awake()
     {
         linea = GetComponent<LineRenderer>();
+        if (posicionInicial == null)
+        {
+            posicionInicial = transform;
+        }
     }
     // Start is called before the first frame update
     void Start()
     {
-
+        
+        ControlPerros.singleton.RegistrarPerro(this);
     }
 
     // Update is called once per frame
     void Update()
     {
-        linea.SetPosition(0, posiciones[0].position);
-        linea.SetPosition(1, posiciones[1].position);
+        linea.SetPosition(0, posicionInicial.position);
+        linea.SetPosition(1, CreadorPerros.singleton.transform.position);
+    }
+
+    private void OnDestroy()
+    {
+        ControlPerros.singleton.DesregistrarPerro(this);
     }
 }
