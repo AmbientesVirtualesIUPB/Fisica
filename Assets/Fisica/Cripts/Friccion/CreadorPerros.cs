@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CreadorPerros : MonoBehaviour
 {
@@ -10,10 +11,19 @@ public class CreadorPerros : MonoBehaviour
     public Transform D;
 
     [Header("Prefab a instanciar")]
-    public GameObject prefab;
+    public GameObject prefabGrande;
+    public GameObject prefabMediano;
+    public GameObject prefabPeque;
 
     [Header("Opciones de creación")]
     [Min(0)] public int cantidad = 50;
+
+    public int cantidadGrandes  = 10;
+    public int cantidadMedianos = 20;
+    public int cantidadPeques   = 20;
+
+    public Text txtGrande, txtMediano, txtPeque;
+
     public Transform contenedor;     // opcional: parent de las instancias
     public bool rotacionAleatoriaY = true;
     public Vector2 escalaUniforme = Vector2.one; // x=min, y=max (1,1 = sin cambio)
@@ -27,6 +37,27 @@ public class CreadorPerros : MonoBehaviour
     [Range(0.01f, 1f)] public float pasoRelax = 0.5f;
 
     public static CreadorPerros singleton;
+    List<Transform> instancias;
+
+    public void CambioPerroGrande(int cuanto)
+    {
+        cantidadGrandes += cuanto;
+        if (cantidadGrandes < 0) cantidadGrandes = 0;
+        txtGrande.text = cantidadGrandes.ToString();
+    }
+    public void CambioPerroMediano(int cuanto)
+    {
+        cantidadMedianos += cuanto;
+        if (cantidadMedianos < 0) cantidadMedianos = 0;
+        txtMediano.text = cantidadMedianos.ToString();
+    }
+    public void CambioPerroPeque(int cuanto)
+    {
+        cantidadPeques += cuanto;
+        if (cantidadPeques < 0) cantidadPeques = 0;
+        txtPeque.text = cantidadPeques.ToString();
+    }
+
 
     private void Awake() => singleton = this;
 
@@ -50,9 +81,15 @@ public class CreadorPerros : MonoBehaviour
         float areaTotal = areaABC + areaACD;
 
         // Instanciar y guardar referencias
-        List<Transform> instancias = new List<Transform>(cantidad);
+        if(instancias != null && instancias.Count > 0) {
+            for (int i = 0; i < instancias.Count; i++)
+            {
+                Destroy(instancias[i].gameObject);
+            }
+        }
+        instancias = new List<Transform>(cantidad);
 
-        for (int i = 0; i < cantidad; i++)
+        for (int i = 0; i < cantidadGrandes; i++)
         {
             bool usarABC = Random.value < (areaABC / areaTotal);
             Vector3 punto = usarABC
@@ -66,10 +103,52 @@ public class CreadorPerros : MonoBehaviour
             float s = Mathf.Clamp(Random.Range(escalaUniforme.x, escalaUniforme.y), 0.0001f, 1000f);
             Vector3 scale = new Vector3(s, s, s);
 
-            GameObject go = Instantiate(prefab, punto, rot, contenedor ? contenedor : transform);
-            go.transform.localScale = Vector3.Scale(prefab.transform.localScale, scale);
+            GameObject go = Instantiate(prefabGrande, punto, rot, contenedor ? contenedor : transform);
+            go.transform.localScale = Vector3.Scale(prefabGrande.transform.localScale, scale);
             instancias.Add(go.transform);
         }
+
+        for (int i = 0; i < cantidadMedianos; i++)
+        {
+            bool usarABC = Random.value < (areaABC / areaTotal);
+            Vector3 punto = usarABC
+                ? PuntoAleatorioEnTriangulo(pA, pB, pC)
+                : PuntoAleatorioEnTriangulo(pA, pC, pD);
+
+            Quaternion rot = rotacionAleatoriaY
+                ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)
+                : transform.rotation;
+
+            float s = Mathf.Clamp(Random.Range(escalaUniforme.x, escalaUniforme.y), 0.0001f, 1000f);
+            Vector3 scale = new Vector3(s, s, s);
+
+            GameObject go = Instantiate(prefabMediano, punto, rot, contenedor ? contenedor : transform);
+            go.transform.localScale = Vector3.Scale(prefabMediano.transform.localScale, scale);
+            instancias.Add(go.transform);
+        }
+
+        for (int i = 0; i < cantidadPeques; i++)
+        {
+            bool usarABC = Random.value < (areaABC / areaTotal);
+            Vector3 punto = usarABC
+                ? PuntoAleatorioEnTriangulo(pA, pB, pC)
+                : PuntoAleatorioEnTriangulo(pA, pC, pD);
+
+            Quaternion rot = rotacionAleatoriaY
+                ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)
+                : transform.rotation;
+
+            float s = Mathf.Clamp(Random.Range(escalaUniforme.x, escalaUniforme.y), 0.0001f, 1000f);
+            Vector3 scale = new Vector3(s, s, s);
+
+            GameObject go = Instantiate(prefabPeque, punto, rot, contenedor ? contenedor : transform);
+            go.transform.localScale = Vector3.Scale(prefabPeque.transform.localScale, scale);
+            instancias.Add(go.transform);
+        }
+
+
+
+
 
         // Relajación por repulsión (anti-solapes)
         if (radioMinimo > 0f && iteracionesRelax > 0)
@@ -228,7 +307,7 @@ public class CreadorPerros : MonoBehaviour
             Debug.LogError("[CreadorPerros] Faltan referencias a las 4 esquinas (A, B, C, D).");
             return false;
         }
-        if (prefab == null)
+        if (prefabGrande == null || prefabMediano == null || prefabPeque == null)
         {
             Debug.LogError("[CreadorPerros] Falta asignar el prefab.");
             return false;

@@ -8,6 +8,13 @@ public class DeslizadorControl : MonoBehaviour
     public float t;
     public Deslizante[] deslizante;
 
+    public static DeslizadorControl singleton;
+
+    private void Awake()
+    {
+        singleton = this;
+    }
+
     private void Update()
     {
         for (int i = 0; i < deslizante.Length; i++)

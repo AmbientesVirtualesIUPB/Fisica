@@ -45,6 +45,7 @@ public class ControlPerros : MonoBehaviour
         {
             f += perros[i].fuerza;
         }
+        print(f); 
         return f;
     }
 }

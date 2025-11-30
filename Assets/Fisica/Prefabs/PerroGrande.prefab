@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 5837601716985115391}
   - component: {fileID: 1263649004189582583}
   m_Layer: 0
-  m_Name: Perro
+  m_Name: PerroGrande
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
