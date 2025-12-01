@@ -52,6 +52,13 @@ public class ControlGeneralFriccion : MonoBehaviour
         StartCoroutine(Fallando());
     }
 
+    public void Reiniciar()
+    {
+
+        float t = 0;
+        DeslizadorControl.singleton.t = curvaMal.Evaluate(t);
+    }
+
     IEnumerator Fallando()
     {
         float t = 0;

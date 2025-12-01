@@ -289,7 +289,7 @@ public class Deslizante : MonoBehaviour
         // Aplicar la rotación usando LookRotation
         if (adelante != Vector3.zero && arriba != Vector3.zero)
         {
-            transform.rotation = Quaternion.LookRotation(adelante, arriba);
+            //transform.rotation = Quaternion.LookRotation(adelante, arriba);
         }
     }
 
